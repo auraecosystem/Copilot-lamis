@@ -2,6 +2,10 @@
 
 Lightweight repo combining a Nim CLI (Copilot.nim) and a small Vim plugin (lamis.vim) to demonstrate simple LLM integration and editor bindings.
 
+```bash
+>_nim dev
+>_general dev
+```
 Overview
 - Copilot.nim — Nim CLI that can send prompts to an OpenAI-compatible or generic HTTP endpoint.
 - lamis.vim — Minimal Vim plugin that demonstrates invoking Copilot.nim from the editor.
