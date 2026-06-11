@@ -1,0 +1,6 @@
+# Nim build artifacts
+*.c
+*.exe
+*.out
+/*.nimble
+nimcache/
