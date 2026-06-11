@@ -1,78 +1,64 @@
 # Copilot agent onboarding — Copilot-lamis
 
-Summary
-- Small, educational repo demonstrating a Nim CLI (Copilot.nim) that calls OpenAI‑compatible or generic HTTP LLM endpoints, plus a minimal Vim plugin (lamis.vim) that shows how to invoke the CLI from the editor.
-- Purpose for an agent: implement small edits, refactors, or improvements to Copilot.nim and lamis.vim; update docs and CI; produce small demos.
+This file is a short, trusted guide for a cloud copilot or automated agent seeing this repository for the first time. Follow these instructions before running broad searches or making changes.
 
-Repository at-a-glance
-- Size & type: Very small source tree (single Nim CLI + auxiliary files and a tiny Vim plugin). No heavy dependency graph or tests.
-- Languages: Nim (primary), small Vim Script file, and ancillary Markdown. (Languages: Nim ~44%, Python ~39% in metadata — but active source is Nim + Vim Script.)
-- Key files/paths (root):
-  - Copilot.nim — main CLI (project entrypoint)
-  - lamis.vim — minimal Vim plugin
-  - README.md — usage and quick-start
-  - .github/workflows/nim.yml — CI that installs Nim and runs a smoke build/run
-  - .gitignore, THIRD_PARTY_SOURCES.md, HIGHLIGHT.md (may exist), doc/ and Rdoc/ directories
+What this repo is
+- Minimal educational demo: a Nim CLI (Copilot.nim) that can call OpenAI‑compatible or generic HTTP LLM endpoints, plus a tiny Vim plugin (lamis.vim) demonstrating editor bindings.
+- Typical agent work: small edits to Copilot.nim, safe improvements to lamis.vim, documentation updates, and light refactors. There are no large dependency graphs or test suites.
 
-Build & validation (trusted sequence — follow these exactly before opening PRs)
-1) Bootstrap environment (Linux / Ubuntu CI-like environment assumed):
-   - Install choosenim (Nim toolchain installer) and select stable toolchain:
-     - curl https://nim-lang.org/choosenim/init.sh -sSf | sh
-     - source ~/.profile || true
-     - choosenim stable
-   - Always verify with: nim --version
-   - Rationale: CI installs choosenim and uses the stable toolchain; matching that minimizes CI mismatch.
+Quick facts (where to look)
+- Root files: Copilot.nim (entrypoint), lamis.vim (Vim plugin), README.md, THIRD_PARTY_SOURCES.md, .github/workflows/nim.yml, .gitignore
+- CI: .github/workflows/nim.yml — installs choosenim, uses stable toolchain, builds Copilot.nim and runs a smoke invocation.
+- Languages: Nim (primary), Vim Script, Markdown.
 
-2) Clean workspace (recommended before build):
-   - Remove Nim cache and previous artifacts: rm -rf nimcache/ *.c *.exe *.out
-   - Ensure working tree is clean: git status --porcelain should be empty for CI-like runs.
+Trusted build & validation steps (must-run before PRs)
+1) Bootstrap toolchain (match CI):
+   - curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+   - source ~/.profile || true
+   - choosenim stable
+   - Verify: nim --version
+   Note: CI uses choosenim stable on ubuntu-latest. Reproducing this locally avoids CI surprises.
 
-3) Build and run (local reproduction of CI):
-   - Build and run in one step (compiles then runs): nim c -r Copilot.nim --verbosity:0
-     - Notes: The repository's CI uses the same command but allows failure (|| true). Locally, expect nim to compile and then run the program.
-   - Smoke-run without real credentials (safe test):
-     - COPILOT_API_URL="https://example.invalid" echo "test" | nim r Copilot.nim
-     - This verifies CLI input path without calling real APIs.
+2) Clean workspace (always):
+   - rm -rf nimcache/ *.c *.exe *.out
+   - git status --porcelain -> should be empty before running builds.
 
-4) Environment variables used by runtime (do NOT commit secrets):
-   - COPILOT_API_KEY — API key
-   - COPILOT_API_URL — endpoint URL (e.g., https://api.openai.com/v1/chat/completions)
-   - Optional: COPILOT_MODEL (default gpt-4o-mini), COPILOT_PROVIDER ("openai" or "generic")
-   - When testing real requests, use GitHub Actions secrets or local env, never commit keys into the repo.
+3) Build and smoke-run (local):
+   - Compile and run: nim c -r Copilot.nim --verbosity:0
+   - Safe smoke run without real credentials: COPILOT_API_URL="https://example.invalid" echo "test" | nim r Copilot.nim
+   - If you need to run a real request, set COPILOT_API_KEY and COPILOT_API_URL in your environment (use secrets in CI).
 
-5) Tests & lints
-   - There are no automated test suites or linter configs present. The CI performs only a smoke build/run. For changes that add behavior, include reproducible manual smoke tests in the PR description.
+Environment variables (do NOT commit values)
+- COPILOT_API_KEY — API key used by the CLI
+- COPILOT_API_URL — provider endpoint (e.g. https://api.openai.com/v1/chat/completions)
+- Optional: COPILOT_MODEL, COPILOT_PROVIDER
 
-CI / Checks to expect
-- GitHub Actions workflow: .github/workflows/nim.yml
-  - Installs choosenim, selects stable, prints nim --version, runs nim c -r Copilot.nim and a smoke run.
-  - Keep changes compatible with a fresh choosenim stable install and a default Ubuntu runner.
-- Before submitting a PR, verify locally using the Build & run steps above so CI will likely pass.
+Where to change code safely
+- Copilot.nim (root): main logic and HTTP calls. Keep HTTP behavior resilient (timeouts, non-fatal errors) and avoid hardcoded credentials.
+- lamis.vim (root): editor UX. If invoking Copilot.nim from Vim, use shellescape() and show results in a scratch buffer by default (avoid destructive behavior).
+- README.md / THIRD_PARTY_SOURCES.md: documentation and attribution.
 
-Project layout and where to make edits
-- Entry point: Copilot.nim (root) — edits here change runtime behavior.
-- Editor integration: lamis.vim (root) — safe to change UX/mappings; if you run system() from Vim, ensure shellescape and safe quoting are used to avoid command injection.
-- Docs and metadata: README.md, THIRD_PARTY_SOURCES.md, .github/*
+CI considerations
+- Any change that introduces new system packages or OS-level dependencies must also update .github/workflows/nim.yml to install them, otherwise CI will fail.
+- CI intentionally avoids real API calls; do not add tests that require secrets unless wired to repository secrets and conditioned to run only in protected contexts.
 
-Non-obvious dependencies / gotchas
-- The project depends on the Nim toolchain; the choosenim installer modifies ~/.profile. When scripting in ephemeral shells, ensure profile is sourced before calling choosenim/nim.
-- Nim builds generate C files and nimcache/ directory; these are ignored by .gitignore but will appear locally.
-- There is no package manager manifest (no .nimble file required for current sources); treat Copilot.nim as a standalone Nim script.
-- lamis.vim may attempt to call Copilot.nim — when updating, prefer safe behavior that prints the command or writes to a scratch buffer by default unless explicitly configured.
+Common failure modes & remedies
+- choosenim fails to install: ensure network access; run the script in an interactive shell and source ~/.profile after install.
+- nim compile errors referencing generated C: remove nimcache/ and recompile; examine generated .c for compiler messages.
+- CI timeouts: keep CI steps lightweight. If a change requires longer runs, split into multiple jobs or increase step timeouts in workflow.
 
-Rules-of-thumb for agents (follow these to reduce rejected PRs)
-- Always replicate CI steps locally (bootstrap choosenim stable then run nim c -r Copilot.nim) and confirm the smoke run succeeds before creating a PR.
-- Never add code that requires additional system packages on CI without also updating .github/workflows/nim.yml to install them.
-- Do not commit secrets or credentials. Use repo secrets for CI and document required secrets in README (without values).
-- For Vim plugin changes that spawn shell commands, use shellescape() and sanitize inputs. Prefer writing output to a scratch buffer instead of opening external windows.
-- If adding tests or linters, include CI updates and document how to run them locally.
+Agent workflow & rules (follow these)
+- Always run the Trusted build & validation steps locally before opening a PR — this is the single best way to avoid CI rejections.
+- Do not add new external services or unpinned dependencies without updating CI and documenting local setup steps.
+- Never commit secrets. If runtime testing requires keys, use repository secrets and document required secret names in README (no values).
+- For changes that alter runtime behavior, include a concise manual smoke test and expected output in the PR description.
+- For editor integrations that run shell commands, default to a non-destructive preview mode (print would-be command or write to a scratch buffer). Only make the plugin execute network calls when the user has explicitly opted in.
 
-If something fails
-- If choosenim installation fails, retry with a fresh shell and ensure curl succeeds; source ~/.profile then run choosenim stable.
-- If nim c fails with C compilation errors, remove nimcache/ and retry. Inspect generated .c file for hints.
-- If CI fails with timeouts, split heavy work into separate steps or avoid network calls in CI; the current CI is intentionally light.
+If you cannot reproduce a failure
+- Re-run bootstrap and clean steps. If the failure persists, run nim c -r Copilot.nim --verbosity:0 to capture compiler output and include the full error in your PR or issue.
+- When uncertain, prefer creating a small draft PR with test changes and a verbose description so humans can quickly reproduce and review.
 
-Final note to agents
-Trust these onboarding instructions for routine exploration and build tasks. Only perform additional repo-wide searches or tool calls when you cannot reproduce an expected result using the steps above or when the change requires locating files not listed here.
+Final instruction to agents
+Trust this file as your primary onboarding checklist. Only perform broader repository searches when the steps above are insufficient to reproduce or validate the change you intend to make.
 
-(End of instructions)
+(End of file)
