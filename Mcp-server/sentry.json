@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "sentry": {
+      "type": "local",
+      "command": "npx",
+      "args": ["@sentry/mcp-server@latest", "--host=$SENTRY_HOST"],
+      "env": {
+        "SENTRY_HOST": "https://contoso.sentry.io",
+        "SENTRY_ACCESS_TOKEN": "$COPILOT_MCP_SENTRY_ACCESS_TOKEN"
+      }
+    }
+  }
+}
