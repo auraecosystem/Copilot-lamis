@@ -1,6 +1,26 @@
 ---
 highlight: auraecosystem/Copilot-lamis
 ---
+```plain.txt
+runtime/
+│
+├── core/
+│   ├── webidl_parser.py
+│   ├── agent_engine.py
+│   ├── executor.py
+│   ├── memory.py
+│
+├── idl/
+│   ├── aura.idl
+│
+├── storage/
+│   ├── completion.json
+│
+├── api/
+│   ├── server.py
+│
+├── main.py
+```
 - Recommended About metadata (short description + homepage) and the exact gh command to set it.
 - Suggested repository topics and the gh api command to apply them.
 - A ready-to-add HIGHLIGHT.md (full contents) and a README HIGHLIGHT snippet (full contents).
