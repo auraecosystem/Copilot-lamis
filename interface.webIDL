@@ -1,5 +1,4 @@
-
-typedef (HTMLImageElement or
+typedef (HTMLImageElement
 SVGImageElement) HTMLOrSVGImageElement;
 typedef (HTMLOrSVGImageElement or
 HTMLVideoElement or
