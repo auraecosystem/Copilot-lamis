@@ -1,0 +1,53 @@
+from pathlib import Path
+import zipfile
+
+root = Path("/mnt/data/copilot-lamis-x")
+(root / "src" / "agents").mkdir(parents=True, exist_ok=True)
+(root / "src" / "providers").mkdir(parents=True, exist_ok=True)
+(root / "web").mkdir(parents=True, exist_ok=True)
+
+files = {
+    root / "README.md": """# Copilot-Lamis X
+
+AI development platform starter scaffold.
+
+## Commands
+- lamis chat
+- lamis scan .
+- lamis docs .
+""",
+    root / "src" / "main.nim": """import os
+
+echo "Copilot-Lamis X"
+echo "Args: ", commandLineParams()
+""",
+    root / "src" / "agents" / "code_agent.nim": """type
+  CodeAgent* = object
+    name*: string
+
+proc run*(prompt: string): string =
+  result = "CodeAgent: " & prompt
+""",
+    root / "src" / "providers" / "openai.nim": """proc chat*(prompt: string): string =
+  result = "OpenAI provider placeholder: " & prompt
+""",
+    root / "web" / "index.html": """<!DOCTYPE html>
+<html>
+<head><title>Copilot-Lamis X</title></head>
+<body>
+<h1>Copilot-Lamis X Dashboard</h1>
+<div id="app">Ready</div>
+</body>
+</html>""",
+}
+
+for path, content in files.items():
+    path.write_text(content)
+
+zip_path = "/mnt/data/copilot-lamis-x-starter.zip"
+with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as z:
+    for p in root.rglob("*"):
+        if p.is_file():
+            z.write(p, p.relative_to(root))
+
+print(zip_path)

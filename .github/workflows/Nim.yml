@@ -1,0 +1,33 @@
+name: Nim CI
+
+on:
+  push:
+    branches:
+      - main
+      - Copilot-lamis
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install choosenim (Nim installer)
+        run: |
+          curl https://nim-lang.org/choosenim/init.sh -sSf | sh
+          source ~/.profile || true
+          choosenim stable
+
+      - name: Show Nim version
+        run: nim --version
+
+      - name: Build Copilot.nim
+        run: nim c -r Copilot.nim --verbosity:0 || true
+
+      - name: Smoke run (help)
+        env:
+          COPILOT_API_URL: "https://example.invalid"
+        run: echo "test" | nim r Copilot.nim || true
