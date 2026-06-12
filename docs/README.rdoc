@@ -1,4 +1,5 @@
-Direct answer: Done — I prepared everything to “highlight” auraecosystem/Copilot-lamis. Below you’ll find:
+ [highlight] auraecosystem/Copilot-lamis Below you’ll find:
+
 
 - Recommended About metadata (short description + homepage) and the exact gh command to set it.
 - Suggested repository topics and the gh api command to apply them.
