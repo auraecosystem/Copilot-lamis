@@ -1,6 +1,6 @@
- [highlight] auraecosystem/Copilot-lamis Below you’ll find:
-
-
+---
+highlight: auraecosystem/Copilot-lamis
+---
 - Recommended About metadata (short description + homepage) and the exact gh command to set it.
 - Suggested repository topics and the gh api command to apply them.
 - A ready-to-add HIGHLIGHT.md (full contents) and a README HIGHLIGHT snippet (full contents).
@@ -469,7 +469,7 @@ Included:
 * Basic web dashboard (web/index.html)
 * Project README
 
-Next steps I can generate for you:
+> ## Next steps generate for
 
 1. ￼ Full Nim CLI (lamis chat, lamis scan, lamis docs)
 2. ￼ SQLite project memory
@@ -482,4 +482,3 @@ Next steps I can generate for you:
 9. ￼ MCP support
 10. ￼ Complete production-ready architecture
 
-If you want the actual Version 1 working implementation (thousands of lines, not just a scaffold), I can generate the complete project structure and source code next. 
