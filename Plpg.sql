@@ -45,3 +45,5 @@ BEGIN
     RETURN QUERY SELECT v_status, v_total_sales, v_metric_result;
 END;
 $$ LANGUAGE plpgsql;
+
+
